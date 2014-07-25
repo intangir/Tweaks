@@ -9,10 +9,10 @@ import org.bukkit.event.Listener;
 
 public class Tweak extends Config implements Listener 
 {
-	transient Tweaks plugin;
-	transient Logger log;
-	transient String TWEAK_NAME;
-	transient String TWEAK_VERSION;
+	public transient Tweaks plugin;
+	public transient Logger log;
+	public transient String TWEAK_NAME;
+	public transient String TWEAK_VERSION;
 
 	Tweak(Tweaks plugin) {
 		this.plugin = plugin;
@@ -21,7 +21,9 @@ public class Tweak extends Config implements Listener
 	
 	public void enable() {
 		log.info("Enabling " + TWEAK_NAME + " v" + TWEAK_VERSION);
-		init();
+		if(CONFIG_FILE != null) {
+			init();
+		}
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 

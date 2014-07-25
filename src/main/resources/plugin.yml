@@ -1,7 +1,7 @@
 name: Tweaks
 main: com.github.intangir.Tweaks.Tweaks
 version: ${version}
-load: startup
+depend: [Yamler]
 description: A Collection of mostly unrelated simple tweaks for minecraft
 author: Intangir
 

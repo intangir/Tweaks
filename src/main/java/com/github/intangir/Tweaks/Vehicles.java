@@ -2,6 +2,8 @@ package com.github.intangir.Tweaks;
 
 import java.io.File;
 
+import lombok.Getter;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
@@ -28,10 +30,10 @@ public class Vehicles extends Tweak
 		breakSwordInHand = true;
 	}
 
-	boolean fixExitMinecart;
-	boolean fixExitBoat;
-	boolean fixExitHorse;
-	boolean breakSwordInHand;
+	private boolean fixExitMinecart;
+	private boolean fixExitBoat;
+	private boolean fixExitHorse;
+	private boolean breakSwordInHand;
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onVehicleExit(VehicleExitEvent e) {

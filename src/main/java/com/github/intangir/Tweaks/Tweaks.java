@@ -39,6 +39,12 @@ public class Tweaks extends JavaPlugin implements Listener
         
         if(mainConfig.isVehicles())
         	tweaks.add(new Vehicles(this));
+        if(mainConfig.isWeather())
+        	tweaks.add(new Weather(this));
+        if(mainConfig.isTime())
+        	tweaks.add(new Time(this));
+        if(mainConfig.isCauldrons())
+        	tweaks.add(new Cauldrons(this));
         
         for(Tweak tweak : tweaks)
         	tweak.enable();

@@ -14,6 +14,9 @@ public class MainConfig extends Config
 	transient Logger log;
 	
 	private boolean vehicles;
+	private boolean cauldrons;
+	private boolean weather;
+	private boolean time;
 
 	MainConfig(Tweaks plugin) {
 		this.plugin = plugin;
@@ -22,7 +25,9 @@ public class MainConfig extends Config
 		CONFIG_FILE = new File(plugin.getDataFolder(), "config.yml");
 		
 		vehicles = false;
-		
+		cauldrons = false;
+		weather = false;
+		time = false;
 	}
 	
 	
