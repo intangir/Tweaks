@@ -25,8 +25,6 @@ public class Tweaks extends JavaPlugin implements Listener
 		log = getLogger();
 		pdfFile = getDescription();
 
-		//Bukkit.getPluginManager().registerEvents(this, this);
-		
 		tweaks = new ArrayList<Tweak>();
 
 		mainConfig = new MainConfig(this);
@@ -42,6 +40,8 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Anvils(this));
         if(mainConfig.isCauldrons())
         	tweaks.add(new Cauldrons(this));
+        if(mainConfig.isCommands())
+        	tweaks.add(new Commands(this));
         if(mainConfig.isTime())
         	tweaks.add(new Time(this));
         if(mainConfig.isVehicles())

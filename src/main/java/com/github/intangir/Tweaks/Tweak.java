@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -157,4 +158,19 @@ public class Tweak extends Config implements Listener, CommandExecutor
 		sender.sendMessage(ChatColor.RED + "An error occurred while trying to process the command");
 		return true;
 	}
+	
+    // why doesn't java have any easily accessible join functions...
+    public String join(List<String> args, String connector) {
+    	String joined = null;
+    	
+    	for(String part : args) {
+    		if(joined == null) {
+    			joined = part;
+    		} else {
+    			joined += connector + part;
+    		}
+    	}
+    	
+    	return joined;
+    }
 }

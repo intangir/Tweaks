@@ -16,6 +16,7 @@ public class MainConfig extends Config
 	private boolean admin;
 	private boolean anvils;
 	private boolean cauldrons;
+	private boolean commands;
 	private boolean time;
 	private boolean vehicles;
 	private boolean weather;
@@ -29,6 +30,7 @@ public class MainConfig extends Config
 		admin = false;
 		anvils = false;
 		cauldrons = false;
+		commands = false;
 		time = false;
 		vehicles = false;
 		weather = false;
