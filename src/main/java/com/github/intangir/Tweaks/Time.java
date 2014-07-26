@@ -33,11 +33,11 @@ public class Time extends Tweak
 	{
 		super.enable();
 		
-		for(World w : plugin.getServer().getWorlds()) {
+		for(World w : server.getWorlds()) {
 			setTime(w);
 		}
 		
-		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new FixWorlds(), 0, resetticks);
+		server.getScheduler().scheduleSyncRepeatingTask(plugin, new FixWorlds(), 0, resetticks);
 	}
 	
 	@EventHandler
@@ -47,7 +47,7 @@ public class Time extends Tweak
 	
 	class FixWorlds implements Runnable {
 		public void run() {
-			for(World w : plugin.getServer().getWorlds()) {
+			for(World w : server.getWorlds()) {
 				setTime(w);
 			}
 		}

@@ -13,10 +13,12 @@ public class MainConfig extends Config
 	transient Tweaks plugin;
 	transient Logger log;
 	
-	private boolean vehicles;
+	private boolean admin;
+	private boolean anvils;
 	private boolean cauldrons;
-	private boolean weather;
 	private boolean time;
+	private boolean vehicles;
+	private boolean weather;
 
 	MainConfig(Tweaks plugin) {
 		this.plugin = plugin;
@@ -24,10 +26,12 @@ public class MainConfig extends Config
 		
 		CONFIG_FILE = new File(plugin.getDataFolder(), "config.yml");
 		
-		vehicles = false;
+		admin = false;
+		anvils = false;
 		cauldrons = false;
-		weather = false;
 		time = false;
+		vehicles = false;
+		weather = false;
 	}
 	
 	

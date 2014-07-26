@@ -30,7 +30,7 @@ public class Weather extends Tweak
 	{
 		super.enable();
 		
-		for(World w : plugin.getServer().getWorlds()) {
+		for(World w : server.getWorlds()) {
 			setWeather(w);
 		}
 	}
@@ -62,10 +62,10 @@ public class Weather extends Tweak
 	public void onLeaveBed(PlayerBedLeaveEvent e) {
 
 		// this event screws up the weather, so reapply the settings on all worlds
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+		server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			public void run() {
 				
-				for(World w : plugin.getServer().getWorlds()) {
+				for(World w : server.getWorlds()) {
 					setWeather(w);
 				}
 			}

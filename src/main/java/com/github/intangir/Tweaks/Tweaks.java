@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,14 +36,18 @@ public class Tweaks extends JavaPlugin implements Listener
 			log.severe("Couldn't Load config.yml");
 		}
         
+        if(mainConfig.isAdmin())
+        	tweaks.add(new Admin(this));
+        if(mainConfig.isAnvils())
+        	tweaks.add(new Anvils(this));
+        if(mainConfig.isCauldrons())
+        	tweaks.add(new Cauldrons(this));
+        if(mainConfig.isTime())
+        	tweaks.add(new Time(this));
         if(mainConfig.isVehicles())
         	tweaks.add(new Vehicles(this));
         if(mainConfig.isWeather())
         	tweaks.add(new Weather(this));
-        if(mainConfig.isTime())
-        	tweaks.add(new Time(this));
-        if(mainConfig.isCauldrons())
-        	tweaks.add(new Cauldrons(this));
         
         for(Tweak tweak : tweaks)
         	tweak.enable();

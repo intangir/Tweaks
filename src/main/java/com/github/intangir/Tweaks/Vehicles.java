@@ -2,8 +2,6 @@ package com.github.intangir.Tweaks;
 
 import java.io.File;
 
-import lombok.Getter;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
@@ -48,7 +46,7 @@ public class Vehicles extends Tweak
 				
 				final Location fixLoc = exiter.getLocation().add(0, 0.5, 0);
 				
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 	    			public void run() {
 	    		    	
 	    				exiter.teleport(fixLoc);

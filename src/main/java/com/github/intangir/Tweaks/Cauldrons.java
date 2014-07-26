@@ -14,6 +14,7 @@ public class Cauldrons extends Tweak
 		TWEAK_VERSION = "1.0";
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onCauldronUse(PlayerInteractEvent e) {
 		if(e.getClickedBlock().getType() == Material.CAULDRON && e.getMaterial() == Material.GLASS_BOTTLE && e.getAction() == Action.RIGHT_CLICK_BLOCK) {
