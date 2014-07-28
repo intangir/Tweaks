@@ -3,10 +3,7 @@ package com.github.intangir.Tweaks;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +42,6 @@ public class Commands extends Tweak
 		super.enable();
 
 		String pattern = join(new ArrayList<String>(aliases.descendingKeySet()), "|");
-		log.info(pattern);
 		replPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 	}
 	
@@ -61,7 +57,6 @@ public class Commands extends Tweak
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onPreprocessCommand(PlayerCommandPreprocessEvent e) {
 
-		log.info("preprocess " + e.getMessage());
 	    // replace aliases with the actual commands
 	    String msg = substitute(e.getMessage());
 	    e.setMessage(msg);
@@ -74,9 +69,6 @@ public class Commands extends Tweak
 	    // get the command
 	    String cmd = msg.substring(1).split(" ",2)[0];
 
-		log.info("preprocess cmd " + cmd);
-
-	    
 	    // check if its specifically allowed (regardless of being in a hidden plugin)
 	    if(unhiddenCommands.contains(cmd.toLowerCase())) {
 	        return;
@@ -92,9 +84,7 @@ public class Commands extends Tweak
 	    // check if its in an hidden plugin
 	    PluginCommand pc = server.getPluginCommand(cmd);
 	    if(pc != null) {
-	        log.info("plugin name " + pc.getPlugin().getName());
-	    	String plug = pc.toString().split(" ")[1];
-	    	log.info("plugin split " + plug);
+	    	String plug = pc.getPlugin().getName();
 	        if(server.getHelpMap().getIgnoredPlugins().contains(plug)) {
 	            e.setCancelled(true);
 	            e.getPlayer().sendMessage(hideMessage);

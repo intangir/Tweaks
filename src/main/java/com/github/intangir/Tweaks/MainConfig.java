@@ -15,8 +15,13 @@ public class MainConfig extends Config
 	
 	private boolean admin;
 	private boolean anvils;
+	private boolean books;
 	private boolean cauldrons;
 	private boolean commands;
+	private boolean drops;
+	private boolean fires;
+	private boolean pets;
+	private boolean recipes;
 	private boolean time;
 	private boolean vehicles;
 	private boolean weather;
@@ -29,8 +34,13 @@ public class MainConfig extends Config
 		
 		admin = false;
 		anvils = false;
+		books = false;
 		cauldrons = false;
 		commands = false;
+		drops = false;
+		fires = false;
+		pets = false;
+		recipes = false;
 		time = false;
 		vehicles = false;
 		weather = false;

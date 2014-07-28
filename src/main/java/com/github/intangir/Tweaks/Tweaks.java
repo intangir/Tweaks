@@ -38,10 +38,20 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Admin(this));
         if(mainConfig.isAnvils())
         	tweaks.add(new Anvils(this));
+        if(mainConfig.isBooks())
+        	tweaks.add(new Books(this));
         if(mainConfig.isCauldrons())
         	tweaks.add(new Cauldrons(this));
         if(mainConfig.isCommands())
         	tweaks.add(new Commands(this));
+        if(mainConfig.isDrops())
+        	tweaks.add(new Drops(this));
+        if(mainConfig.isFires())
+        	tweaks.add(new Fires(this));
+        if(mainConfig.isPets())
+        	tweaks.add(new Pets(this));
+        if(mainConfig.isRecipes())
+        	tweaks.add(new Recipes(this));
         if(mainConfig.isTime())
         	tweaks.add(new Time(this));
         if(mainConfig.isVehicles())
