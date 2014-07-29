@@ -46,10 +46,10 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Commands(this));
         if(mainConfig.isDrops())
         	tweaks.add(new Drops(this));
-        if(mainConfig.isFires())
-        	tweaks.add(new Fires(this));
         if(mainConfig.isPets())
         	tweaks.add(new Pets(this));
+        if(mainConfig.isProtect())
+        	tweaks.add(new Protect(this));
         if(mainConfig.isRecipes())
         	tweaks.add(new Recipes(this));
         if(mainConfig.isTime())

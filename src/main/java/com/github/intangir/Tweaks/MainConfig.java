@@ -19,8 +19,8 @@ public class MainConfig extends Config
 	private boolean cauldrons;
 	private boolean commands;
 	private boolean drops;
-	private boolean fires;
 	private boolean pets;
+	private boolean protect;
 	private boolean recipes;
 	private boolean time;
 	private boolean vehicles;
@@ -38,8 +38,8 @@ public class MainConfig extends Config
 		cauldrons = false;
 		commands = false;
 		drops = false;
-		fires = false;
 		pets = false;
+		protect = false;
 		recipes = false;
 		time = false;
 		vehicles = false;
