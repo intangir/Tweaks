@@ -1,5 +1,6 @@
 package com.github.intangir.Tweaks;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,13 +16,18 @@ public class Books extends Tweak
 {
 	Books(Tweaks plugin) {
 		super(plugin);
+		CONFIG_FILE = new File(plugin.getDataFolder(), "books.yml");
 		TWEAK_NAME = "Tweak_Books";
 		TWEAK_VERSION = "1.0";
+		booksPermission = "tweak.books.give";
 	}
 	
+	private String booksPermission;
 
 	@CommandHandler("givebook")
 	public void onGiveBook(CommandSender sender, String[] args) {
+		if(!sender.isOp() && !sender.hasPermission(booksPermission)) return;
+		
 		if(args.length < 2) {
 			sender.sendMessage(ChatColor.RED + "Usage: /givebook <player> <book>");
 			return;
