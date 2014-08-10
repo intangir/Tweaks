@@ -40,6 +40,9 @@ public class Portals extends Tweak
 		
 		beamDowns = new HashMap<String, BlockVector>();
 		
+		portalPermission = "tweak.portals.use";
+		beamupPermission = "tweak.portals.beamup";
+		
 	}
 	
 	private int fudgeRadius;
@@ -47,6 +50,8 @@ public class Portals extends Tweak
 	private String beamUpTo;
 	private Map<String, SpecialPortal> specialPortals;
 	private transient Map<String, BlockVector> beamDowns;
+	private String beamupPermission;
+	private String portalPermission;
 	private String operator;
 
 	// this one is called after all of the worlds are loaded
@@ -56,6 +61,8 @@ public class Portals extends Tweak
 			p.getValue().setFrom(parseLocation(p.getValue().getLoc()));
 			p.getValue().setDest(parseLocation(p.getValue().getTo()));
 		}
+		
+		Commands.unhideCommand("beamup");
 	}
 	
 	public Location parseLocation(String loc) {
@@ -85,6 +92,11 @@ public class Portals extends Tweak
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onWarpPortal(PlayerPortalEvent e) {
+		if(!e.getPlayer().hasPermission(portalPermission)) {
+			log.info("Blocking " + e.getPlayer().getName() + " from portalling");
+			e.setCancelled(true);
+			return;
+		}
 		// special portals
 		for(Map.Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
 			Location l = e.getFrom();
@@ -121,12 +133,13 @@ public class Portals extends Tweak
 	// beams a player up
 	@CommandHandler("beamup")
 	public void onCmdBeamUp(CommandSender sender, String[] args) {
+		if(!sender.hasPermission(beamupPermission)) return;
 		final Player p = (Player) sender;
 		final BlockVector ploc = p.getLocation().toVector().toBlockVector();
 
 		// check the location
 		if(!p.getWorld().getName().equals("world")) {
-			p.sendMessage(ChatColor.GREEN + "<from " + operator + "> I can only beam you off the surface of planet");
+			p.sendMessage(ChatColor.GREEN + "<from " + operator + "> I can only beam you off the surface of the world");
 		} else if(ploc.getBlockY() < 63) {
 			p.sendMessage(ChatColor.GREEN + "<from " + operator + "> You need to be above sea level for me to lock onto you");
 		} else {
