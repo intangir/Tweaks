@@ -1,5 +1,7 @@
 package com.github.intangir.Tweaks;
 
+import java.io.File;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,15 +15,27 @@ public class Admin extends Tweak
 {
 	Admin(Tweaks plugin) {
 		super(plugin);
+		CONFIG_FILE = new File(plugin.getDataFolder(), "admin.yml");
 		TWEAK_NAME = "Tweak_Admin";
 		TWEAK_VERSION = "1.0";
 		server.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+		worldPermission = "tweak.admin.world";
+		setSpawnPermission = "tweak.admin.setspawn";
+		wherePermission = "tweak.admin.where";
+		changeServerPermission = "tweak.admin.changeserver";
+		randomTeleportPermission = "tweak.admin.randomteleport";
 	}
+	
+	private String worldPermission;
+	private String setSpawnPermission;
+	private String wherePermission;
+	private String changeServerPermission;
+	private String randomTeleportPermission;
 	
 	// teleports you to a world (tp command is a bit lacking)
 	@CommandHandler("world")
 	public void onCmdWorldTp(CommandSender sender, String[] args) {
-		if(!sender.isOp()) return;
+		if(!sender.isOp() && !sender.hasPermission(worldPermission)) return;
 		World w = server.getWorld(args[0]);
 		if(w != null) {
 			server.getPlayer(sender.getName()).teleport(w.getSpawnLocation());
@@ -31,7 +45,7 @@ public class Admin extends Tweak
 	// sets the worlds spawn
 	@CommandHandler("setspawn")
 	public void onCmdSetSpawn(CommandSender sender, String[] args) {
-		if(!sender.isOp()) return;
+		if(!sender.isOp() && !sender.hasPermission(setSpawnPermission)) return;
 		Player p = server.getPlayer(sender.getName());
 		if(p != null) {
 			World w = p.getWorld();
@@ -43,7 +57,7 @@ public class Admin extends Tweak
 	// tells you were the player is
 	@CommandHandler("where")
 	public void onCmdWhere(CommandSender sender, String[] args) {
-		if(!sender.isOp()) return;
+		if(!sender.isOp() && !sender.hasPermission(wherePermission)) return;
 		Player p = server.getPlayer(args[0]);
 		if(p != null) {
 			Location l = p.getLocation();
@@ -54,7 +68,7 @@ public class Admin extends Tweak
 	// tells bungeecord proxy to move a player to another server
 	@CommandHandler("changeserver")
 	public void onCmdChangeServer(CommandSender sender, String[] args) {
-		if(!sender.isOp()) return;
+		if(!sender.isOp() && !sender.hasPermission(changeServerPermission)) return;
 		Player p = server.getPlayer(args[0]);
 		if(p != null) {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -70,7 +84,7 @@ public class Admin extends Tweak
 	@SuppressWarnings("deprecation")
 	@CommandHandler("randomteleport")
 	public void onCmdRandomSpawn(CommandSender sender, String[] args) {
-		if(!sender.isOp()) return;
+		if(!sender.isOp() && !sender.hasPermission(randomTeleportPermission)) return;
 		Player p = server.getPlayer(args[0]);
 		
 		if(p != null)
