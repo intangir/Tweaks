@@ -39,7 +39,7 @@ public class Respawn extends Tweak
 		worldRespawns.put("world_the_end", "world");
 		
 		overrides = new HashMap<String, String>();
-		overrides.put("prisonpearl.prisoner", "world_prison");
+		overrides.put("world_prison", "tweak.respawn.prisoner");
 		
 		spawnEffects = new HashMap<String, Integer>();
 		spawnEffects.put("DAMAGE_RESISTANCE", 60);
@@ -100,9 +100,10 @@ public class Respawn extends Tweak
 
 		// override respawn world for some
 		boolean overridden = false;
-		for(String permission : overrides.keySet()) {
-			if(p.hasPermission(permission) && !p.isOp()) {
-				wname = overrides.get(permission);
+		for(Map.Entry<String, String> override : overrides.entrySet()) {
+			log.info("checking " + p.getName() + " for " + override.getValue());
+			if(p.hasPermission(override.getValue())) {
+				wname = override.getKey();
 				log.info("overriding respawn of " + p.getName() + " to " + wname);
 				overridden = true;
 			}
