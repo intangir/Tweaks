@@ -48,6 +48,16 @@ public class Tweak extends Config implements Listener, CommandExecutor
 		server.getPluginManager().registerEvents(this, plugin);
 		registerCommands();
 		
+		server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			public void run() {
+				delayedEnable();
+			}
+		}, 1);
+
+		
+	}
+
+	public void delayedEnable() {
 	}
 
 	public void disable() {

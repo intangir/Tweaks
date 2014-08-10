@@ -58,7 +58,7 @@ public class Pets extends Tweak
 							if(leadsTransferOwnership && entity instanceof Tameable) {
 								// transfer ownership of tamable animals
 								Tameable pet = (Tameable) entity;
-								if((pet.isTamed() && pet.getOwner() == player) && player.isOp()) {
+								if((pet.isTamed() && pet.getOwner() == player) || player.isOp()) {
 									pet.setOwner((Player)target);
 								}
 							}

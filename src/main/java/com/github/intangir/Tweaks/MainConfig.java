@@ -18,13 +18,20 @@ public class MainConfig extends Config
 	private boolean books;
 	private boolean cauldrons;
 	private boolean commands;
+	private boolean difficulty;
 	private boolean drops;
 	private boolean pets;
+	private boolean portals;
 	private boolean protect;
 	private boolean recipes;
+	private boolean respawn;
+	private boolean schedule;
 	private boolean time;
 	private boolean vehicles;
 	private boolean weather;
+	private boolean worlds;
+	private boolean xpbottle;
+
 
 	MainConfig(Tweaks plugin) {
 		this.plugin = plugin;
@@ -37,14 +44,18 @@ public class MainConfig extends Config
 		books = false;
 		cauldrons = false;
 		commands = false;
+		difficulty = false;
 		drops = false;
 		pets = false;
+		portals = false;
 		protect = false;
 		recipes = false;
+		respawn = false;
+		schedule = false;
 		time = false;
 		vehicles = false;
 		weather = false;
+		worlds = false;
+		xpbottle = false;
 	}
-	
-	
 }
