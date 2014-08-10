@@ -21,14 +21,18 @@ public class Commands extends Tweak
 		CONFIG_FILE = new File(plugin.getDataFolder(), "commands.yml");
 		TWEAK_NAME = "Tweak_Commands";
 		TWEAK_VERSION = "1.0";
+		
+		instance = this;
 
 		hideMessage = "Unknown command. Type \"help\" for help.";
-		unhiddenCommands = Arrays.asList("lag", "vote");
-		hiddenCommands = Arrays.asList("plugins", "kill", "version");
+		unhiddenCommands = new ArrayList<String>(Arrays.asList("lag", "vote"));
+		hiddenCommands = Arrays.asList("plugins", "kill", "version", "me");
 		
 		aliases = new TreeMap<String, String>();
 		aliases.put("/rules", "/help rules");
 		aliases.put("/snitch ", "/ps ");
+		
+		replPattern = null;
 	}
 
 	private String hideMessage;
@@ -36,16 +40,14 @@ public class Commands extends Tweak
 	private List<String> hiddenCommands;
 	private TreeMap<String, String> aliases;
 	private transient Pattern replPattern;
-	
-	public void enable()
-	{
-		super.enable();
-
-		String pattern = join(new ArrayList<String>(aliases.descendingKeySet()), "|");
-		replPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-	}
+	private static Commands instance = null;
 	
 	public String substitute(String message) {
+		
+		if(replPattern == null) {
+			String pattern = join(new ArrayList<String>(aliases.descendingKeySet()), "|");
+			replPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+		}
 		
 		Matcher m = replPattern.matcher(message);
 		while(m.find()) {
@@ -90,5 +92,26 @@ public class Commands extends Tweak
 	            e.getPlayer().sendMessage(hideMessage);
 	        }
 	    }
+	}
+
+	public static void unhideCommands(List<String> commands) {
+		if(instance != null) {
+			for(String command : commands) {
+				instance.unhiddenCommands.add(command);
+			}
+		}
+	}
+
+	public static void unhideCommand(String command) {
+		if(instance != null) {
+			instance.unhiddenCommands.add(command);
+		}
+	}
+
+	public static void addAlias(String alias, String cmd) {
+		if(instance != null) {
+			instance.aliases.put(alias, cmd);
+			instance.replPattern = null;
+		}
 	}
 }
