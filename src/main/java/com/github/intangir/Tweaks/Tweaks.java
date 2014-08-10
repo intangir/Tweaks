@@ -42,6 +42,8 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Books(this));
         if(mainConfig.isCauldrons())
         	tweaks.add(new Cauldrons(this));
+        if(mainConfig.isChat())
+        	tweaks.add(new Chat(this));
         if(mainConfig.isCommands())
         	tweaks.add(new Commands(this));
         if(mainConfig.isDifficulty())

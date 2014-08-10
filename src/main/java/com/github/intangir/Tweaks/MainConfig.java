@@ -17,6 +17,7 @@ public class MainConfig extends Config
 	private boolean anvils;
 	private boolean books;
 	private boolean cauldrons;
+	private boolean chat;
 	private boolean commands;
 	private boolean difficulty;
 	private boolean drops;
@@ -43,6 +44,7 @@ public class MainConfig extends Config
 		anvils = false;
 		books = false;
 		cauldrons = false;
+		chat = false;
 		commands = false;
 		difficulty = false;
 		drops = false;
