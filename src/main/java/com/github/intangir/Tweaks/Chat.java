@@ -19,6 +19,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class Chat extends Tweak
 {
@@ -45,6 +48,10 @@ public class Chat extends Tweak
 		
 		localMode = new HashSet<String>();
 		
+		showJoins = true;
+		showQuits = true;
+		showKicks = true;
+		showDeaths = true;
 	}
 	
 	public void delayedEnable()
@@ -80,6 +87,10 @@ public class Chat extends Tweak
 	private transient Pattern censorsPattern;
 	private String globalPermission;
 	private int localDistance;
+	private boolean showJoins;
+	private boolean showQuits;
+	private boolean showKicks;
+	private boolean showDeaths;
 	
 
 	@EventHandler(ignoreCancelled = true)
@@ -118,12 +129,33 @@ public class Chat extends Tweak
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		if(!showJoins)
+			e.setJoinMessage(null);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerKick(PlayerKickEvent e) {
+		if(!showKicks)
+			e.setLeaveMessage(null);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerQuit(PlayerQuitEvent e) {
+		if(!showQuits)
+			e.setQuitMessage(null);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		// censor incase someone has a creatively named weapon
 		String msg = censor(e.getDeathMessage());
 		
 		// color the text in red
-		e.setDeathMessage(ChatColor.RED + msg);
+		if(showDeaths)
+			e.setDeathMessage(ChatColor.RED + msg);
+		else
+			e.setDeathMessage(null);
 		
 		// append location info for logging and private message
 		Location loc = e.getEntity().getLocation();
