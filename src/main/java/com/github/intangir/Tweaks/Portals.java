@@ -17,7 +17,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.util.BlockVector;
 
 public class Portals extends Tweak
@@ -43,6 +46,9 @@ public class Portals extends Tweak
 		portalPermission = "tweak.portals.use";
 		beamupPermission = "tweak.portals.beamup";
 		
+		customPortalDimension = null;
+		customPortalFactor = 8;
+		
 	}
 	
 	private int fudgeRadius;
@@ -53,6 +59,8 @@ public class Portals extends Tweak
 	private String beamupPermission;
 	private String portalPermission;
 	private String operator;
+	private String customPortalDimension;
+	private int customPortalFactor;
 
 	// this one is called after all of the worlds are loaded
 	public void delayedEnable()
@@ -90,18 +98,81 @@ public class Portals extends Tweak
 		private transient Location dest;
 	}
 	
+	// create a generalized portal event class i can use to handle both players and entities
+	@Getter
+	@Setter
+	public class GeneralPortalEvent {
+		public GeneralPortalEvent(Location from, Player player) {
+			this.from = from;
+			this.player = player;
+			to = null;
+			cancelled = false;
+			travelAgent = null;
+		}
+		private Location from;
+		private Location to;
+		private Boolean cancelled;
+		private Player player;
+		private Boolean travelAgent;
+	}
+
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-	public void onWarpPortal(PlayerPortalEvent e) {
+	public void onPlayerPortal(PlayerPortalEvent e) {
+		// make sure player has permission
 		if(!e.getPlayer().hasPermission(portalPermission)) {
 			log.info("Blocking " + e.getPlayer().getName() + " from portalling");
 			e.setCancelled(true);
 			return;
 		}
+
+		// transfer to a generalized object
+		GeneralPortalEvent g = new GeneralPortalEvent(e.getFrom(), e.getPlayer()); 
+		
+		// handle it generally
+		onWarpPortal(g);
+		
+		// transfer back
+		if(g.getTo() != null)
+			e.setTo(g.getTo());
+		if(g.getTravelAgent() != null)
+			e.useTravelAgent(g.getTravelAgent());
+		if(g.getCancelled())
+			e.setCancelled(true);
+	}
+	
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+	public void onEntityPortal(EntityPortalEvent e) {
+		// transfer to a generalized object
+		GeneralPortalEvent g = new GeneralPortalEvent(e.getFrom(), null);
+		
+		// handle it generally
+		onWarpPortal(g);
+
+		// transfer back
+		if(g.getTo() != null)
+			e.setTo(g.getTo());
+		if(g.getTravelAgent() != null)
+			e.useTravelAgent(g.getTravelAgent());
+		if(g.getCancelled())
+			e.setCancelled(true);
+
+	}
+
+	public void onWarpPortal(GeneralPortalEvent e) {
+
 		// special portals
 		for(Map.Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
 			Location l = e.getFrom();
 			if(l.getWorld().equals(p.getValue().getFrom().getWorld()) && l.distance(p.getValue().getFrom()) < fudgeRadius) {
+
+				// disable special portals for non-players
+				if(e.getPlayer() == null) {
+					e.setCancelled(true);
+					return;
+				}
+				
 				log.info(e.getPlayer().getName() + " using gate " + p.getKey());
+
 				if(server.getWorld(p.getValue().getTo()) != null) {
 
 					// test for beam down
@@ -127,6 +198,64 @@ public class Portals extends Tweak
 				e.setTo(l);
 				return;
 			}
+		}
+		
+		// custom portal dimension (link to and from a world besides world_nether)
+		if(customPortalDimension != null) {
+			Location l = customPortalDestination(e.getFrom());
+			if(l != null) {
+				e.setTo(l);
+				e.setTravelAgent(true);
+			} else {
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerFall(PlayerMoveEvent e) {
+		// falling out of the world
+		if(e.getTo().getY() < -20) {
+			// falling out of custom portal dimension
+			if(customPortalDimension != null && e.getTo().getWorld().getName().equals(customPortalDimension)) {
+				Location l = customPortalDestination(e.getFrom());
+				if(l != null) {
+					e.getPlayer().teleport(l);
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onVehicleFall(VehicleMoveEvent e) {
+		// falling out of the world
+		if(e.getTo().getY() < -20) {
+			// falling out of custom portal dimension
+			if(customPortalDimension != null && e.getTo().getWorld().getName().equals(customPortalDimension)) {
+				Location l = customPortalDestination(e.getFrom());
+				if(l != null) {
+					e.getVehicle().teleport(l);
+				}
+			}
+		}
+	}
+
+	public Location customPortalDestination(Location l) {
+		if(l.getWorld().getName().equals("world")) {
+			l.setWorld(server.getWorld(customPortalDimension));
+			l.setX(l.getX() / customPortalFactor);
+			l.setZ(l.getZ() / customPortalFactor);
+			return l;
+		} else if(l.getWorld().getName().equals(customPortalDimension)) {
+			l.setWorld(server.getWorld("world"));
+			l.setX(l.getX() * customPortalFactor);
+			l.setZ(l.getZ() * customPortalFactor);
+			// handle fall out
+			if(l.getY() < -20)
+				l.setY(300);
+			return l;
+		} else {
+			return null;
 		}
 	}
 	
