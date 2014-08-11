@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.cubespace.Yamler.Config.Comment;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -45,13 +47,25 @@ public class Chat extends Tweak
 		retells = new HashMap<String, String>();
 		replies = new HashMap<String, String>();
 		ignores = new HashMap<String, Set<String>>();
-		
+
+		spamTime = new HashMap<CommandSender, Long>();
+		spamRepeated = new HashMap<CommandSender, String>();
+
 		localMode = new HashSet<String>();
 		
 		showJoins = true;
 		showQuits = true;
 		showKicks = true;
 		showDeaths = true;
+		
+		censoring = true;
+		
+		// spam settings
+		spamNormalDelay = 2;
+		spamAllCapsDelay = 1;
+		spamCussDelay = 1;
+		spamRepeatDelay = 1;
+		spamThreshhold = 3;
 	}
 	
 	public void delayedEnable()
@@ -85,17 +99,41 @@ public class Chat extends Tweak
 	private Map<String, String> censors;
 	private transient Set<String> localMode;
 	private transient Pattern censorsPattern;
+	private boolean censoring;
 	private String globalPermission;
 	private int localDistance;
 	private boolean showJoins;
 	private boolean showQuits;
 	private boolean showKicks;
 	private boolean showDeaths;
+	private transient Map<CommandSender, Long> spamTime;
+	private transient Map<CommandSender, String> spamRepeated;
 	
+	@Comment("delay added for normal chat")
+	private float spamNormalDelay;
+
+	@Comment("delay added for all caps")
+	private float spamAllCapsDelay;
+
+	@Comment("delay added for cussing")
+	private float spamCussDelay;
+
+	@Comment("delay added for repeating")
+	private float spamRepeatDelay;
+
+	@Comment("how long your delay can be before it counts as spam, set to 0 or less to disable")
+	private float spamThreshhold;
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
-		e.setMessage(censor(e.getMessage()));
+		if(isSpamming(e.getPlayer(), e.getMessage()))
+		{
+			e.setCancelled(true);
+			return;
+		}
+
+		if(censoring)
+			e.setMessage(censor(e.getMessage()));
 		
 		Player sender = e.getPlayer();
 		if(sender == null)
@@ -297,5 +335,57 @@ public class Chat extends Tweak
 		} catch(Exception e) {}
 		
 		sender.sendMessage(ChatColor.YELLOW + args[0] + " is not being ignored.");
+	}
+	
+	// checks for spamming
+	public boolean isSpamming(CommandSender player, String text) {
+		final float nanos = 1000000000;
+		boolean spamming = false;
+		// protected channel
+		if(spamThreshhold > 0) {
+			// start counting
+			long currTime = System.nanoTime();
+			if(!spamTime.containsKey(player))
+				spamTime.put(player, currTime);
+			
+			// get last delayed time
+			long lastTime = spamTime.get(player);
+			
+			// has the entire delay passed?
+			if(currTime >= lastTime) {
+				// so much time has passed the old time is irrelevant, update it to now
+				lastTime = currTime;
+			} else if(currTime < lastTime - spamThreshhold * nanos) {
+				// they are spamming, send warning
+				player.sendMessage(ChatColor.RED + "You are sending to this channel too quickly!");
+				spamming = true;
+			}
+			
+			// now add up the delays based on context for next time
+			lastTime += spamNormalDelay * nanos;
+			
+			// all caps
+			if(text.toUpperCase().equals(text)) {
+				lastTime += spamAllCapsDelay * nanos;
+			}
+			
+			// cussing
+			if(!text.equals(censor(text))) {
+				lastTime += spamCussDelay * nanos;
+			}
+			
+			// repeating
+			if(text.equals(spamRepeated.get(player))) {
+				lastTime += spamRepeatDelay * nanos;
+			}
+			
+			// save info
+			spamTime.put(player, lastTime);
+			if(!spamming) {
+				spamRepeated.put(player, text);
+			}
+			
+		}
+		return spamming;
 	}
 }
