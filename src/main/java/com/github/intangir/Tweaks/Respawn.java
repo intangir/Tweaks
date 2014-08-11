@@ -16,6 +16,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -129,6 +130,7 @@ public class Respawn extends Tweak
 		return instance.chooseSpawn(world);
 	}
 	
+	// chooses a spawn point for the world
 	public Location chooseSpawn(String world) {
 		String r = worldRespawns.get(world);
 		// if its a redirect to another world
@@ -159,6 +161,7 @@ public class Respawn extends Tweak
 		return instance.getValidY(w, x, z);
 	}
 
+	// finds the lowest spawn valid location at tha x and z
 	public Location getValidY(World w, int x, int z) {
 		w.loadChunk(x >> 4, z >> 4 );
 		
@@ -174,4 +177,17 @@ public class Respawn extends Tweak
 		}
 		return null;
 	}
+	
+	// remove the immunity buffs granted on respawn if they attack anything
+	@EventHandler(ignoreCancelled = true)
+	public void onAttack(EntityDamageByEntityEvent e) {
+		if(e.getDamager() != null && e.getDamager() instanceof Player) {
+			Player attacker = (Player) e.getDamager();
+			for(PotionEffect effect : effects) {
+				attacker.removePotionEffect(effect.getType());
+			}
+		}
+	}
+
+	
 }
