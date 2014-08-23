@@ -35,7 +35,7 @@ public class Difficulty extends Tweak
 
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityDeath(EntityDeathEvent e) {
-		if(monsterXpMultiplier == 1.0f) {
+		if(monsterXpMultiplier != 1.0f) {
 			e.setDroppedExp(Math.round(e.getDroppedExp() * monsterXpMultiplier));
 		}
 	}
