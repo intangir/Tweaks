@@ -105,7 +105,7 @@ public class Protect extends Tweak
 
 	@EventHandler(ignoreCancelled = true)
 	public void onCreeperExplode(EntityExplodeEvent e) {
-		if(e.getEntityType() == EntityType.CREEPER && e.getLocation().getBlockY() > creeperProtectAboveY)
+		if(e.getEntity() != null && e.getEntityType() == EntityType.CREEPER && e.getLocation().getBlockY() > creeperProtectAboveY)
 			e.blockList().clear();
 	}
 
