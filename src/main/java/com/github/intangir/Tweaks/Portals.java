@@ -41,7 +41,7 @@ public class Portals extends Tweak
 		beamUpTo = "world 0 70 0";
 		operator = "Scotty";
 		
-		beamDowns = new HashMap<String, BlockVector>();
+		beamDowns = new BeamDowns(plugin);
 		
 		portalPermission = "tweak.portals.use";
 		beamupPermission = "tweak.portals.beamup";
@@ -55,7 +55,7 @@ public class Portals extends Tweak
 	private int beamUpTime;
 	private String beamUpTo;
 	private Map<String, SpecialPortal> specialPortals;
-	private transient Map<String, BlockVector> beamDowns;
+	private transient BeamDowns beamDowns;
 	private String beamupPermission;
 	private String portalPermission;
 	private String operator;
@@ -65,6 +65,8 @@ public class Portals extends Tweak
 	// this one is called after all of the worlds are loaded
 	public void delayedEnable()
 	{
+		beamDowns.init();
+		
 		for(Map.Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
 			p.getValue().setFrom(parseLocation(p.getValue().getLoc()));
 			p.getValue().setDest(parseLocation(p.getValue().getTo()));
@@ -73,10 +75,17 @@ public class Portals extends Tweak
 		Commands.unhideCommand("beamup");
 	}
 	
+	public void disable() {
+		super.disable();
+		beamDowns.save();
+	}
+	
 	public Location parseLocation(String loc) {
-		String[] parts = loc.split(" ");
-		if(parts.length == 4) {
-			return new Location(server.getWorld(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+		if(loc != null) {
+			String[] parts = loc.split(" ");
+			if(parts.length == 4) {
+				return new Location(server.getWorld(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+			}
 		}
 		return null;
 	}
@@ -176,7 +185,7 @@ public class Portals extends Tweak
 				if(server.getWorld(p.getValue().getTo()) != null) {
 
 					// test for beam down
-					BlockVector beamDown = beamDowns.get(e.getPlayer().getName()); 
+					BlockVector beamDown = parseLocation(beamDowns.get(e.getPlayer().getName())).toVector().toBlockVector(); 
 					if(beamDown != null) {
 						l = Respawn.getValidY_s(server.getWorld(p.getValue().getTo()), beamDown.getBlockX(), beamDown.getBlockZ());
 						if(l == null) {
@@ -218,7 +227,7 @@ public class Portals extends Tweak
 		if(e.getTo().getY() < -20) {
 			// falling out of custom portal dimension
 			if(customPortalDimension != null && e.getTo().getWorld().getName().equals(customPortalDimension)) {
-				Location l = customPortalDestination(e.getFrom());
+				Location l = customPortalDestination(e.getTo());
 				if(l != null) {
 					e.getPlayer().teleport(l);
 				}
@@ -232,7 +241,7 @@ public class Portals extends Tweak
 		if(e.getTo().getY() < -20) {
 			// falling out of custom portal dimension
 			if(customPortalDimension != null && e.getTo().getWorld().getName().equals(customPortalDimension)) {
-				Location l = customPortalDestination(e.getFrom());
+				Location l = customPortalDestination(e.getTo());
 				if(l != null) {
 					e.getVehicle().teleport(l);
 				}
@@ -251,8 +260,9 @@ public class Portals extends Tweak
 			l.setX(l.getX() * customPortalFactor);
 			l.setZ(l.getZ() * customPortalFactor);
 			// handle fall out
-			if(l.getY() < -20)
+			if(l.getY() < -20) {
 				l.setY(300);
+			}
 			return l;
 		} else {
 			return null;
@@ -286,8 +296,8 @@ public class Portals extends Tweak
 						if(ploc.equals(p.getLocation().toVector().toBlockVector())) {
 							p.getWorld().playEffect(SurfaceLoc.clone().add(0.5, 0.5, 0.5), Effect.ENDER_SIGNAL, 0);
 							p.teleport(parseLocation(beamUpTo).clone().add(0.5, 0.5, 0.5));
-							beamDowns.put(p.getName(), ploc);
-							p.sendMessage(ChatColor.GREEN + "<from " + operator + "> Welcome back " + p.getName() + ", you can beam down using that teleporter anytime before a system restart.");
+							beamDowns.put(p.getName(), String.format("world %d %d %d", ploc.getBlockX(), ploc.getBlockY(), ploc.getBlockZ()));
+							p.sendMessage(ChatColor.GREEN + "<from " + operator + "> Welcome back " + p.getName() + ", you can beam back down using that teleporter whenever you like.");
 						} else {
 							p.sendMessage(ChatColor.GREEN + "<from " + operator + "> I couldn't maintain a lock, you must've moved.");
 						}
