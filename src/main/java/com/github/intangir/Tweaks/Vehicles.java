@@ -64,6 +64,7 @@ public class Vehicles extends Tweak
 
 	    					if(item != null) {
 	    						exiter.getWorld().dropItem(fixLoc, item);
+	    						vehicle.remove();
 	    					}
 	    				}
 	    			}
