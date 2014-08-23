@@ -50,6 +50,8 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Difficulty(this));
         if(mainConfig.isDrops())
         	tweaks.add(new Drops(this));
+        if(mainConfig.isMobs())
+        	tweaks.add(new Mobs(this));
         if(mainConfig.isPets())
         	tweaks.add(new Pets(this));
         if(mainConfig.isPortals())
