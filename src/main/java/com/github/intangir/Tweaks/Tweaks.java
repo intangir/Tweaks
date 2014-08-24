@@ -60,6 +60,8 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Protect(this));
         if(mainConfig.isRecipes())
         	tweaks.add(new Recipes(this));
+        if(mainConfig.isRepairs())
+        	tweaks.add(new Repairs(this));
         if(mainConfig.isRespawn())
         	tweaks.add(new Respawn(this));
         if(mainConfig.isSchedule())

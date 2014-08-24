@@ -26,6 +26,7 @@ public class MainConfig extends Config
 	private boolean portals;
 	private boolean protect;
 	private boolean recipes;
+	private boolean repairs;
 	private boolean respawn;
 	private boolean schedule;
 	private boolean time;
@@ -54,6 +55,7 @@ public class MainConfig extends Config
 		portals = false;
 		protect = false;
 		recipes = false;
+		repairs = false;
 		respawn = false;
 		schedule = false;
 		time = false;
