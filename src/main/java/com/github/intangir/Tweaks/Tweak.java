@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import net.cubespace.Yamler.Config.Config;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -28,8 +29,11 @@ public class Tweak extends Config implements Listener, CommandExecutor
 	public transient Tweaks plugin;
 	public transient Server server;
 	public transient Logger log;
+	public transient boolean debugging;
 	public transient String TWEAK_NAME;
 	public transient String TWEAK_VERSION;
+	private static String versionPrefix = null;
+	 
 	private transient Map<Command, Method> commandHandlers;
 
 	public Tweak() {}
@@ -37,6 +41,8 @@ public class Tweak extends Config implements Listener, CommandExecutor
 		this.plugin = plugin;
 		server = plugin.getServer();
 		log = plugin.getLog();
+		debugging = plugin.getMainConfig().isDebug();
+		
 		commandHandlers = new HashMap<Command, Method>();
 	}
 	
@@ -53,8 +59,6 @@ public class Tweak extends Config implements Listener, CommandExecutor
 				delayedEnable();
 			}
 		}, 1);
-
-		
 	}
 
 	public void delayedEnable() {
@@ -84,10 +88,33 @@ public class Tweak extends Config implements Listener, CommandExecutor
 		}
 	}
 	
+	public void debug(String msg) {
+		if(debugging) {
+			log.info(msg);
+		}
+	}
+	
 	// annotation to specify command handler methods
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface CommandHandler {
 		String value();
+	}
+	
+	// finds the version specific NMS class to match the general name 
+	public static Class<?> getVersionedClass(String className) throws ClassNotFoundException {
+		if (versionPrefix == null) {
+
+			String serverClassName = Bukkit.getServer().getClass().getName();
+			String[] packages = serverClassName.split("\\.");
+			if (packages.length == 5) {
+				versionPrefix = packages[3] + ".";
+			}
+		}
+
+		className = className.replace("org.bukkit.craftbukkit.", "org.bukkit.craftbukkit." + versionPrefix);
+		className = className.replace("net.minecraft.server.", "net.minecraft.server." + versionPrefix);
+	
+		return Tweak.class.getClassLoader().loadClass(className);
 	}
 	
 	// registers all of the annotated command handlers from its object methods

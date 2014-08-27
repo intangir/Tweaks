@@ -111,6 +111,7 @@ public class Drops extends Tweak
 	        for(int i = 0; i < 4; i++) {
 	            if(rand.nextInt(100) < 25) {
 	                e.getBlock().getWorld().dropItem(e.getBlock().getLocation(), new ItemStack(Material.GLOWSTONE_DUST , 1));
+	                return;
 	            }
 	        }
 	    }

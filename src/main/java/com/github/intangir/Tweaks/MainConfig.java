@@ -34,6 +34,8 @@ public class MainConfig extends Config
 	private boolean weather;
 	private boolean worlds;
 	private boolean xpbottle;
+	
+	private boolean debug;
 
 
 	MainConfig(Tweaks plugin) {
@@ -63,5 +65,7 @@ public class MainConfig extends Config
 		weather = false;
 		worlds = false;
 		xpbottle = false;
+		
+		debug = false;
 	}
 }
