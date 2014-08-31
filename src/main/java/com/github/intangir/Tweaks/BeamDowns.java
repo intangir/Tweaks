@@ -46,6 +46,10 @@ public class BeamDowns extends Config
 		}
 	}
 
+	public boolean contains(String name) {
+		return beamDowns.containsKey(name);
+	}
+	
 	public void put(String name, String loc) {
 		beamDowns.put(name, loc);
 		save();

@@ -185,7 +185,10 @@ public class Portals extends Tweak
 				if(server.getWorld(p.getValue().getTo()) != null) {
 
 					// test for beam down
-					BlockVector beamDown = parseLocation(beamDowns.get(e.getPlayer().getName())).toVector().toBlockVector(); 
+					BlockVector beamDown = null;
+					if(beamDowns.contains(e.getPlayer().getName())) {
+						beamDown = parseLocation(beamDowns.get(e.getPlayer().getName())).toVector().toBlockVector();
+					}
 					if(beamDown != null) {
 						l = Respawn.getValidY_s(server.getWorld(p.getValue().getTo()), beamDown.getBlockX(), beamDown.getBlockZ());
 						if(l == null) {
