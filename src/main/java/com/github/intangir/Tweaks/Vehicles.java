@@ -49,23 +49,26 @@ public class Vehicles extends Tweak
 				server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 	    			public void run() {
 	    		    	
-	    				exiter.teleport(fixLoc);
-	    				ItemStack hand = ((Player)exiter).getItemInHand();
-	    		    	
-	    				// auto destroy boat/minecart if they are a holding a sword
-	    				if(breakSwordInHand && hand != null && hand.getType().toString().contains("SWORD")) {
-	    					ItemStack item = null;
-	    					
-	    					if(vehicle instanceof Minecart) {
-	    						item = new ItemStack(Material.MINECART);
-	    					} else if(vehicle instanceof Boat) {
-	    						item = new ItemStack(Material.BOAT);
-	    					}
-
-	    					if(item != null) {
-	    						exiter.getWorld().dropItem(fixLoc, item);
-	    						vehicle.remove();
-	    					}
+	    				if(!exiter.isInsideVehicle())
+	    				{
+	    					exiter.teleport(fixLoc);
+		    				ItemStack hand = ((Player)exiter).getItemInHand();
+		    		    	
+		    				// auto destroy boat/minecart if they are a holding a sword
+		    				if(breakSwordInHand && hand != null && hand.getType().toString().contains("SWORD")) {
+		    					ItemStack item = null;
+		    					
+		    					if(vehicle instanceof Minecart) {
+		    						item = new ItemStack(Material.MINECART);
+		    					} else if(vehicle instanceof Boat) {
+		    						item = new ItemStack(Material.BOAT);
+		    					}
+	
+		    					if(item != null) {
+		    						exiter.getWorld().dropItem(fixLoc, item);
+		    						vehicle.remove();
+		    					}
+		    				}
 	    				}
 	    			}
 	    		}, 2);
