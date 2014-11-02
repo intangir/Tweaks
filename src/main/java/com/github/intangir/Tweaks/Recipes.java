@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
@@ -51,8 +52,16 @@ public class Recipes extends Tweak
 
 		int added = 0;
 		for(Map.Entry<String, List<String>> recipe : recipes.entrySet()) {
-			// a colon means its an ingredient for a shaped recipe
-			if(recipe.getValue().get(0).contains(":")) {
+			
+			if(recipe.getValue().get(0).contains("cook:")) {
+				// cook means its a furnace recipe
+				String[] parts = recipe.getValue().get(0).split(":");
+				ItemStack item = parseItemStack(parts[1]);
+				FurnaceRecipe newrecipe = new FurnaceRecipe(parseItemStack(recipe.getKey()), item.getType(), item.getDurability());
+				server.addRecipe(newrecipe);
+				added++;
+			} else if(recipe.getValue().get(0).contains(":")) { 
+				// otherwise a colon means its an ingredient for a shaped recipe
 				ShapedRecipe newrecipe = new ShapedRecipe(parseItemStack(recipe.getKey()));
 				List<String> shape = new ArrayList<String>();
 				// setting the shape must be done before ingredients are set.. so this has to be done in two passes..
