@@ -17,7 +17,7 @@ public class Difficulty extends Tweak
 		TWEAK_VERSION = "1.0";
 
 		sheepWool = true;
-		monsterXpMultiplier = 0.2f;
+		monsterXpMultiplier = 1f;
 	}
 
 	private boolean sheepWool;
