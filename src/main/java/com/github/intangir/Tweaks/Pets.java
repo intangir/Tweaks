@@ -34,7 +34,6 @@ public class Pets extends Tweak
 	private boolean leadsTransferOwnership;
 	private boolean dogsStaySeated;
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEntityEvent e) {
 		Player player = e.getPlayer();
