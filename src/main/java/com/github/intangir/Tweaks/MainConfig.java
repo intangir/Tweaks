@@ -31,6 +31,7 @@ public class MainConfig extends Config
 	private boolean respawn;
 	private boolean schedule;
 	private boolean time;
+	private boolean titles;
 	private boolean vehicles;
 	private boolean weather;
 	private boolean worlds;
@@ -63,6 +64,7 @@ public class MainConfig extends Config
 		respawn = false;
 		schedule = false;
 		time = false;
+		titles = false;
 		vehicles = false;
 		weather = false;
 		worlds = false;
