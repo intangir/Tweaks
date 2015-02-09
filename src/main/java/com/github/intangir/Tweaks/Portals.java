@@ -40,6 +40,7 @@ public class Portals extends Tweak
 		beamUpTime = 3;
 		beamUpTo = "world 0 70 0";
 		operator = "Scotty";
+		seaLevel = 63;
 		
 		beamDowns = new BeamDowns(plugin);
 		
@@ -61,6 +62,7 @@ public class Portals extends Tweak
 	private String operator;
 	private String customPortalDimension;
 	private int customPortalFactor;
+	private int seaLevel;
 
 	// this one is called after all of the worlds are loaded
 	public void delayedEnable()
@@ -282,7 +284,7 @@ public class Portals extends Tweak
 		// check the location
 		if(!p.getWorld().getName().equals("world")) {
 			p.sendMessage(ChatColor.GREEN + "<from " + operator + "> I can only beam you off the surface of the world");
-		} else if(ploc.getBlockY() < 63) {
+		} else if(ploc.getBlockY() < seaLevel) {
 			p.sendMessage(ChatColor.GREEN + "<from " + operator + "> You need to be above sea level for me to lock onto you");
 		} else {
 			final Location SurfaceLoc = Respawn.getValidY_s(p.getWorld(), ploc.getBlockX(), ploc.getBlockZ());
