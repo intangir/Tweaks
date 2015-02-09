@@ -3,10 +3,13 @@ package com.github.intangir.Tweaks;
 import java.io.File;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class Ice extends Tweak
@@ -20,11 +23,13 @@ public class Ice extends Tweak
 		permaFrost = false;
 		iceCoolsLavaRange = 1;
 		packedIceCoolsLavaRange = 1;
+		obsidianGeneration = true;
 	}
 
 	private boolean permaFrost;
 	private int iceCoolsLavaRange;
 	private int packedIceCoolsLavaRange;
+	private boolean obsidianGeneration;
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onMelt(BlockFadeEvent e) {
@@ -65,4 +70,21 @@ public class Ice extends Tweak
 			e.getBlock().setType(Material.STATIONARY_WATER);
 		}
 	}
+	
+	@EventHandler(ignoreCancelled = true)
+	public void onBlockEvent(BlockFromToEvent e) {
+		if(obsidianGeneration && (e.getBlock().getType() == Material.LAVA || e.getBlock().getType() == Material.STATIONARY_LAVA)) {
+			if(e.getToBlock().getType() == Material.REDSTONE_WIRE) {
+				for(BlockFace f : BlockFace.values()) {
+					if(e.getToBlock().getRelative(f).getType() == Material.WATER || e.getToBlock().getRelative(f).getType() == Material.STATIONARY_WATER) {
+						e.setCancelled(true);
+						e.getToBlock().setType(Material.OBSIDIAN);
+						e.getBlock().getWorld().playSound(e.getBlock().getLocation(), Sound.FIZZ, 1, 1);
+					}
+				}
+			}
+		}
+	}
+
+
 }
