@@ -33,13 +33,29 @@ public class XpBottle extends Tweak
 		e.setExperience(xpPerBottle);
 	}
 	
+	public int getCurrentExp(Player p) {
+		int level = p.getLevel();
+
+		// get the xp into current level
+		int total = Math.round(p.getExp() * levelToXP(level + 1));
+		for(int l = 1; l <= level; l++) {
+			// add up all of the XP for each level they have
+			total += levelToXP(l);
+		}
+		return total;
+	}
+	
+	public int levelToXP(int level) {
+		return 5 + level * 2 + Math.max(level - 16, 0) * 3 + Math.max(level - 31, 0) * 4; 
+	}
+	
 	@EventHandler(ignoreCancelled = true)
 	public void onBottleXp(PlayerInteractEvent e) {
 		if(allowBottling && e.getMaterial() == Material.GLASS_BOTTLE && e.getClickedBlock().getType() == Material.ENCHANTMENT_TABLE) {
 			e.setCancelled(true);
 			
 			Player p = e.getPlayer();
-			int total = p.getTotalExperience();
+			int total = getCurrentExp(p);
 			
 			if(total < xpPerBottle) {
 				p.sendMessage(ChatColor.RED + "Not enough experience to fill a bottle.");
