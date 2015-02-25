@@ -21,6 +21,7 @@ public class MainConfig extends Config
 	private boolean commands;
 	private boolean difficulty;
 	private boolean drops;
+	private boolean effects;
 	private boolean ice;
 	private boolean mobs;
 	private boolean pets;
@@ -54,6 +55,7 @@ public class MainConfig extends Config
 		commands = false;
 		difficulty = false;
 		drops = false;
+		effects = false;
 		ice = false;
 		mobs = false;
 		pets = false;
