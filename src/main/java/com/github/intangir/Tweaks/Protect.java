@@ -56,6 +56,7 @@ public class Protect extends Tweak
 		interactPermission = null;
 		
 		disableCreatureSpawn = false;
+		protectBlacklist = false;
 		
 		protectInteractions = new HashSet<String>();
 		protectInteractions.add(Material.LEVER.toString());
@@ -127,6 +128,10 @@ public class Protect extends Tweak
 	})
 	private Set<String> protectInteractions;
 	private Set<String> protectExplosions;
+	
+	@Comment("makes protection lists blacklists, EVERYTHING is protected by default")
+	private boolean protectBlacklist;
+	
 	private boolean disableCreatureSpawn;
 
 	private transient Set<UUID> excludeDropped;
@@ -243,28 +248,39 @@ public class Protect extends Tweak
 	// disable interactions with listed blocks if the permission is set and they don't have it
 	@EventHandler(ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent e) {
-		if(interactPermission != null &&
-			e.getAction() == Action.RIGHT_CLICK_BLOCK &&
-			protectInteractions.contains(e.getClickedBlock().getType().toString()) &&
-			!e.getPlayer().hasPermission(interactPermission)) {
-			e.setCancelled(true);
+		if(interactPermission != null && (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.PHYSICAL) && !e.getPlayer().hasPermission(interactPermission)) {
+			if(protectInteractions.contains(e.getClickedBlock().getType().toString())) {
+				if(!protectBlacklist) {
+					e.setCancelled(true);
+				}
+			} else {
+				if(protectBlacklist) {
+					e.setCancelled(true);
+				}
+			}
 		}
 	}
 
 	// disable interactions with listed entities if the permission is set and they don't have it 
 	@EventHandler(ignoreCancelled = true)
 	public void onInteractEntity(PlayerInteractEntityEvent e) {
-		if(interactPermission != null &&
-			protectInteractions.contains(e.getRightClicked().getType().toString()) &&
-			!e.getPlayer().hasPermission(interactPermission)) {
-			e.setCancelled(true);
+		if(interactPermission != null && !e.getPlayer().hasPermission(interactPermission)) {
+			if(protectInteractions.contains(e.getRightClicked().getType().toString())) {
+				if(!protectBlacklist) {
+					e.setCancelled(true);
+				}
+			} else {
+				if(protectBlacklist) {
+					e.setCancelled(true);
+				}
+			}
 		}
 	}
 
 	// disable natural creature spawn (defaults off)
 	@EventHandler(ignoreCancelled = true)
 	public void onSpawn(CreatureSpawnEvent e) {
-		if(disableCreatureSpawn && e.getSpawnReason() == SpawnReason.DEFAULT) {
+		if(disableCreatureSpawn && (e.getSpawnReason() == SpawnReason.DEFAULT || e.getSpawnReason() == SpawnReason.SPAWNER)) {
 			e.setCancelled(true);
 		}
 	}
