@@ -3,6 +3,7 @@ package com.github.intangir.Tweaks;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,10 @@ public class Portals extends Tweak
 		SpecialPortal example = new SpecialPortal("world 0 70 0", "world_example 10 100 10");
 		specialPortals.put("example", example);
 		
+		warpedDimensions = new HashMap<String, WarpedDimension>();
+		WarpedDimension example2 = new WarpedDimension("second_world", "second_nether", 10);
+		warpedDimensions.put("secondary nether", example2);
+		
 		fudgeRadius = 4;
 		beamUpTime = 3;
 		beamUpTo = "world 0 70 0";
@@ -47,21 +52,17 @@ public class Portals extends Tweak
 		portalPermission = "tweak.portals.use";
 		beamupPermission = "tweak.portals.beamup";
 		
-		customPortalDimension = null;
-		customPortalFactor = 8;
-		
 	}
 	
 	private int fudgeRadius;
 	private int beamUpTime;
 	private String beamUpTo;
 	private Map<String, SpecialPortal> specialPortals;
+	private Map<String, WarpedDimension> warpedDimensions;
 	private transient BeamDowns beamDowns;
 	private String beamupPermission;
 	private String portalPermission;
 	private String operator;
-	private String customPortalDimension;
-	private int customPortalFactor;
 	private int seaLevel;
 
 	// this one is called after all of the worlds are loaded
@@ -108,7 +109,21 @@ public class Portals extends Tweak
 		@Setter
 		private transient Location dest;
 	}
-	
+
+	@Getter
+	public class WarpedDimension extends Config {
+		public WarpedDimension() {}
+		public WarpedDimension(String world, String warped, Integer factor) {
+			this.world = world;
+			this.warped = warped;
+			this.factor = factor;
+		}
+		
+		private String world;
+		private String warped;
+		private Integer factor;
+	}
+
 	// create a generalized portal event class i can use to handle both players and entities
 	@Getter
 	@Setter
@@ -172,7 +187,7 @@ public class Portals extends Tweak
 	public void onWarpPortal(GeneralPortalEvent e) {
 
 		// special portals
-		for(Map.Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
+		for(Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
 			Location l = e.getFrom();
 			if(l.getWorld().equals(p.getValue().getFrom().getWorld()) && l.distance(p.getValue().getFrom()) < fudgeRadius) {
 
@@ -214,15 +229,13 @@ public class Portals extends Tweak
 			}
 		}
 		
-		// custom portal dimension (link to and from a world besides world_nether)
-		if(customPortalDimension != null) {
-			Location l = customPortalDestination(e.getFrom());
-			if(l != null) {
-				e.setTo(l);
-				e.setTravelAgent(true);
-			} else {
-				e.setCancelled(true);
-			}
+		// custom portal dimensions (link to and from a world besides world_nether)
+		Location l = customPortalDestination(e.getFrom());
+		if(l != null) {
+			e.setTo(l);
+			e.setTravelAgent(true);
+		} else {
+			e.setCancelled(true);
 		}
 	}
 	
@@ -231,11 +244,9 @@ public class Portals extends Tweak
 		// falling out of the world
 		if(e.getTo().getY() < -20) {
 			// falling out of custom portal dimension
-			if(customPortalDimension != null && e.getTo().getWorld().getName().equals(customPortalDimension)) {
-				Location l = customPortalDestination(e.getTo());
-				if(l != null) {
-					e.getPlayer().teleport(l);
-				}
+			Location l = customPortalDestination(e.getTo());
+			if(l != null) {
+				e.getPlayer().teleport(l);
 			}
 		}
 	}
@@ -245,33 +256,36 @@ public class Portals extends Tweak
 		// falling out of the world
 		if(e.getTo().getY() < -20) {
 			// falling out of custom portal dimension
-			if(customPortalDimension != null && e.getTo().getWorld().getName().equals(customPortalDimension)) {
-				Location l = customPortalDestination(e.getTo());
-				if(l != null) {
-					e.getVehicle().teleport(l);
-				}
+			Location l = customPortalDestination(e.getTo());
+			if(l != null) {
+				e.getVehicle().teleport(l);
 			}
 		}
 	}
 
 	public Location customPortalDestination(Location l) {
-		if(l.getWorld().getName().equals("world")) {
-			l.setWorld(server.getWorld(customPortalDimension));
-			l.setX(l.getX() / customPortalFactor);
-			l.setZ(l.getZ() / customPortalFactor);
-			return l;
-		} else if(l.getWorld().getName().equals(customPortalDimension)) {
-			l.setWorld(server.getWorld("world"));
-			l.setX(l.getX() * customPortalFactor);
-			l.setZ(l.getZ() * customPortalFactor);
-			// handle fall out
-			if(l.getY() < -20) {
-				l.setY(300);
-			}
-			return l;
-		} else {
+		if(warpedDimensions.isEmpty()) {
 			return null;
 		}
+		
+		for(Entry<String, WarpedDimension> p : warpedDimensions.entrySet()) {
+			if(l.getWorld().getName().equals(p.getValue().getWorld())) {
+				l.setWorld(server.getWorld(p.getValue().getWarped()));
+				l.setX(l.getX() / p.getValue().getFactor());
+				l.setZ(l.getZ() / p.getValue().getFactor());
+				return l;
+			} else if(l.getWorld().getName().equals(p.getValue().getWarped())) {
+				l.setWorld(server.getWorld(p.getValue().getWorld()));
+				l.setX(l.getX() * p.getValue().getFactor());
+				l.setZ(l.getZ() * p.getValue().getFactor());
+				// handle fall out
+				if(l.getY() < -20) {
+					l.setY(300);
+				}
+				return l;
+			}
+		}
+		return null;
 	}
 	
 	// beams a player up
