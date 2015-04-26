@@ -62,8 +62,10 @@ public class Respawn extends Tweak
 		));
 		
 		effects = new ArrayList<PotionEffect>();
+
+		respawnHealth = (double) 20;
+		respawnFood = 20;
 		
-		random = new Random();
 	}
 	
 	public void enable()
@@ -81,8 +83,9 @@ public class Respawn extends Tweak
 	private Map<String, Integer> spawnEffects;
 	private Set<Integer> noSpawnIds;
 	private transient Collection<PotionEffect> effects;
-	private transient Random random;
 	private static Respawn instance = null; 
+	private Double respawnHealth;
+	private Integer respawnFood;
 	
 	
 	@EventHandler
@@ -92,10 +95,12 @@ public class Respawn extends Tweak
 		String wname = p.getWorld().getName();
 		log.info("player respawn from " + wname);
 
-		// apply spawn buffs (delayed)
+		// apply spawn buffs (delayed) and adjust health
 		server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			public void run() {
 				p.addPotionEffects(effects);
+				p.setHealth(respawnHealth);
+				p.setFoodLevel(respawnFood);
 			}
 		}, 2);
 
@@ -149,8 +154,8 @@ public class Respawn extends Tweak
 			return l;
 		
 		while(true) {
-			int x = l.getBlockX() + (random.nextInt(radius * 2) - radius);
-			int z = l.getBlockZ() + (random.nextInt(radius * 2) - radius);
+			int x = l.getBlockX() + (rand.nextInt(radius * 2) - radius);
+			int z = l.getBlockZ() + (rand.nextInt(radius * 2) - radius);
 			Location spawn = getValidY(w, x, z);
 			if(spawn != null)
 				return spawn;
