@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import net.cubespace.Yamler.Config.Config;
@@ -35,6 +36,8 @@ public class Tweak extends Config implements Listener, CommandExecutor
 	private static String versionPrefix = null;
 	 
 	private transient Map<Command, Method> commandHandlers;
+	
+	protected transient Random rand;
 
 	public Tweak() {}
 	public Tweak(Tweaks plugin) {
@@ -42,6 +45,7 @@ public class Tweak extends Config implements Listener, CommandExecutor
 		server = plugin.getServer();
 		log = plugin.getLog();
 		debugging = plugin.getMainConfig().isDebug();
+		rand = new Random();
 		
 		commandHandlers = new HashMap<Command, Method>();
 	}
