@@ -234,8 +234,6 @@ public class Portals extends Tweak
 		if(l != null) {
 			e.setTo(l);
 			e.setTravelAgent(true);
-		} else {
-			e.setCancelled(true);
 		}
 	}
 	
