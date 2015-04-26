@@ -29,10 +29,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -244,7 +246,28 @@ public class Protect extends Tweak
 			e.setCancelled(true);
 		}
 	}
-	
+
+	// exclude anyone from spawning entities if the permission is set and they don't have it
+	@EventHandler(ignoreCancelled = true)
+	public void onThrowEgg(PlayerEggThrowEvent e) {
+		if(entityDamagePermission != null &&
+			e.getPlayer() != null &&
+			!e.getPlayer().hasPermission(entityDamagePermission)) {
+			e.setHatching(false);
+		}
+	}
+
+	// exclude anyone from shooting bows if they don't have permission to damage
+	@EventHandler(ignoreCancelled = true)
+	public void onShootBow(EntityShootBowEvent e) {
+		if(entityDamagePermission != null &&
+			e.getEntity() != null &&
+			e.getEntity() instanceof Player &&
+			!e.getEntity().hasPermission(entityDamagePermission)) {
+			e.setCancelled(true);
+		}
+	}
+
 	// disable interactions with listed blocks if the permission is set and they don't have it
 	@EventHandler(ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent e) {
