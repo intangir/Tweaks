@@ -36,9 +36,11 @@ public class Admin extends Tweak
 	@CommandHandler("world")
 	public void onCmdWorldTp(CommandSender sender, String[] args) {
 		if(!sender.isOp() && !sender.hasPermission(worldPermission)) return;
-		World w = server.getWorld(args[0]);
-		if(w != null) {
-			server.getPlayer(sender.getName()).teleport(w.getSpawnLocation());
+		if(args.length == 1) {
+			World w = server.getWorld(args[0]);
+			if(w != null) {
+				server.getPlayer(sender.getName()).teleport(w.getSpawnLocation());
+			}
 		}
 	}
 
@@ -69,13 +71,34 @@ public class Admin extends Tweak
 	@CommandHandler("changeserver")
 	public void onCmdChangeServer(CommandSender sender, String[] args) {
 		if(!sender.isOp() && !sender.hasPermission(changeServerPermission)) return;
-		Player p = server.getPlayer(args[0]);
+		String name;
+		String servername;
+		Location tpLoc = null;
+		if(args.length == 1) {
+			name = sender.getName();
+			servername = args[0];
+		} else if(args.length == 2) {
+			name = args[0];
+			servername = args[1];
+		} else if(args.length == 6) {
+			name = args[0];
+			servername = args[1];
+			tpLoc = new Location(server.getWorld(args[2]), new Float(args[3]), new Float(args[4]), new Float(args[5]));
+		} else {
+			return;
+		}
+		Player p = server.getPlayer(name);
 		if(p != null) {
+			if(tpLoc != null) {
+				tpLoc.setYaw(p.getLocation().getYaw());
+				tpLoc.setPitch(p.getLocation().getPitch());
+				p.teleport(tpLoc);
+			}
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF("ConnectOther");
-	        out.writeUTF(args[0]);
-	        out.writeUTF(args[1]);
-	        sender.sendMessage("sending player " + args[0] +  " to server " + args[1]);
+	        out.writeUTF(name);
+	        out.writeUTF(servername);
+	        //sender.sendMessage("sending player " + name +  " to server " + servername);
 	        p.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
 		}
 	}
