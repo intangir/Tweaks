@@ -1,23 +1,19 @@
 package com.github.intangir.Tweaks;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.CropState;
 import org.bukkit.Material;
-import org.bukkit.NetherWartsState;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.StructureGrowEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 public class Farming extends Tweak

@@ -62,7 +62,6 @@ public class Physics extends Tweak
 		oreBlocks.add("IRON_ORE");
 		oreBlocks.add("LAPIS_ORE");
 
-		sides = new BlockFace[] {BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH};
 		allfaces = new BlockFace[] {BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.UP, BlockFace.DOWN};
 		
 		obsidianGeneration = true;
@@ -74,6 +73,7 @@ public class Physics extends Tweak
 		
 		softTorchCancel = true;
 		deepTorchCancel = 30;
+		igniteWebs = true;
 
 	}
 	
@@ -92,7 +92,6 @@ public class Physics extends Tweak
 	private transient Set<Material> leafTypes;
 	private transient Set<Material> treeTypes;
 	private transient Set<Material> oreTypes;
-	private transient BlockFace[] sides;
 	private transient BlockFace[] allfaces;
 	
 	private boolean obsidianGeneration;
@@ -104,6 +103,7 @@ public class Physics extends Tweak
 	
 	private boolean softTorchCancel;
 	private Integer deepTorchCancel;
+	private boolean igniteWebs;
 
 
 	@Override
@@ -158,22 +158,24 @@ public class Physics extends Tweak
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent e) {
 		Block block = e.getBlock();
+		Material blockType = block.getType();
 		
     	// falling blocks/caveins
-		if(fallingTypes.contains(block.getType()) && !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+		if(fallingTypes.contains(blockType) && !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
     		dropBlock(block);
     	}
 		cascade(block, fallingTypes, 10);
 		
 		// ice cools lava
 		int coolRange = 0;
-		if(block.getType() == Material.ICE) {
+		if(blockType == Material.ICE) {
 			coolRange = iceCoolsLavaRange;
 		}
-		if(block.getType() == Material.PACKED_ICE) {
+		if(blockType == Material.PACKED_ICE) {
 			coolRange = packedIceCoolsLavaRange;
 		}
 		
@@ -201,8 +203,7 @@ public class Physics extends Tweak
 			}
 		}
 		
-		if(softTorchCancel && block.getType() == Material.TORCH) {
-			@SuppressWarnings("deprecation")
+		if(softTorchCancel && blockType == Material.TORCH) {
 			Torch torch = new Torch(Material.TORCH, block.getData());
 			Material against = block.getRelative(torch.getAttachedFace()).getType();
 			if(against == Material.SAND || against == Material.DIRT || against == Material.GRAVEL || against == Material.GRASS) {
@@ -212,15 +213,24 @@ public class Physics extends Tweak
 		}
 		
 		if(deepTorchCancel > e.getBlock().getY() && e.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL) {
-			Material mat = block.getType();
-			if(mat == Material.TORCH || mat == Material.JACK_O_LANTERN || mat == Material.FIRE) {
+			if(blockType == Material.TORCH || blockType == Material.JACK_O_LANTERN || blockType == Material.FIRE) {
 				e.getPlayer().sendMessage(ChatColor.RED + "Not enough oxygen for flames down here");
 				block.getWorld().playSound(block.getLocation(), Sound.FIZZ, 1, 1);
 				block.breakNaturally();
 			}
 		}
+		
+		if(igniteWebs && blockType == Material.FIRE) {
+			for(BlockFace face : allfaces) {
+				Block near = block.getRelative(face);
+				if(near.getType() == Material.WEB) {
+					near.breakNaturally();
+				}
+			}
+		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent e)
     {
