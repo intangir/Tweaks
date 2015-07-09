@@ -34,6 +34,7 @@ public class Tweaks extends JavaPlugin implements Listener
 			log.severe("Couldn't Load config.yml");
 		}
         
+        tweaks.add(new Fixes(this));
         if(mainConfig.isAdmin())
         	tweaks.add(new Admin(this));
         if(mainConfig.isAnvils())
