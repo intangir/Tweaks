@@ -168,7 +168,7 @@ public class Drops extends Tweak
 	public void onFish(PlayerFishEvent e) {
 		if(spongeDropChance > 0 && e.getState() == PlayerFishEvent.State.CAUGHT_FISH && e.getCaught() instanceof Item) {
 			Item caught = (Item) e.getCaught();
-			if(caught.getItemStack().getType() == Material.RAW_FISH) {
+			if(rand.nextInt(100) < spongeDropChance && caught.getItemStack().getType() == Material.RAW_FISH) {
 				caught.setItemStack(new ItemStack(Material.SPONGE, 1, (short) 1));
 			}
 		}
