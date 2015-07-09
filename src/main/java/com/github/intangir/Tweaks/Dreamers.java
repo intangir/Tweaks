@@ -7,10 +7,13 @@ import java.util.Map;
 import java.util.Set;
 
 import net.cubespace.Yamler.Config.Comment;
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -31,6 +34,7 @@ public class Dreamers extends Tweak
 		canDream = false;
 		isDream = false;
 		dreamServer = "astral";
+		dreamerGroup = "Dreamer";
 		
 		sleepers = new HashMap<String, String>();
 		deepsleepers = new HashSet<String>();
@@ -56,7 +60,10 @@ public class Dreamers extends Tweak
 	
 	@Comment("server players are sent to who go into deep sleep")
 	private String dreamServer;
-	
+
+	@Comment("group of permissions giving to people when in a dream world they are allowed to edit")
+	private String dreamerGroup;
+
 	transient private Map<String, String> sleepers;
 	transient private Set<String> deepsleepers;
 	
@@ -138,6 +145,68 @@ public class Dreamers extends Tweak
 	        ((Player)sender).sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
 		} else {
 			sender.sendMessage(cantWakeMessage);
+		}
+	}
+	
+	@CommandHandler("allow")
+	public void onCmdAllow(CommandSender sender, String[] args) {
+		if(isDream && sender instanceof Player) {
+			Player owner = (Player) sender;
+			if(owner.isOp() || owner.getName().equals(owner.getWorld().getName())) {
+				if(args.length == 1) {
+					Player friend = server.getPlayer(args[0]);
+					if(friend != null) {
+						server.dispatchCommand(server.getConsoleSender(), "pex group " + dreamerGroup + " user add " + friend.getName() + " " + owner.getWorld().getName());
+						owner.sendMessage(friend.getName() + " is now allowed to shape your dream world.");
+					} else {
+						owner.sendMessage(ChatColor.RED + args[0] + " is not in the astral realm.");
+					}
+				} else {
+					owner.sendMessage(ChatColor.RED + "Usage: /allow <name>");
+				}
+			}
+		}
+	}
+
+	@CommandHandler("disallow")
+	public void onCmdDisallow(CommandSender sender, String[] args) {
+		if(isDream && sender instanceof Player) {
+			Player owner = (Player) sender;
+			if(owner.isOp() || owner.getName().equals(owner.getWorld().getName())) {
+				if(args.length == 1) {
+					Player friend = server.getPlayer(args[0]);
+					if(friend != null) {
+						server.dispatchCommand(server.getConsoleSender(), "pex group " + dreamerGroup + " user remove " + friend.getName() + " " + owner.getWorld().getName());
+						owner.sendMessage(friend.getName() + " is no longer allowed to shape your dream world.");
+					} else {
+						owner.sendMessage(ChatColor.RED + args[0] + " is not in the astral realm.");
+					}
+				} else {
+					owner.sendMessage(ChatColor.RED + "Usage: /allow <name>");
+				}
+			}
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	void onEntityInteract(PlayerInteractEntityEvent event) {
+		if (isDream && event.getRightClicked() instanceof Player) {
+			final Player dreamer = (Player)event.getRightClicked();
+			if (dreamer.hasMetadata("NPC")) {
+				// see if they have a dream world
+				final World dreamWorld = server.getWorld(dreamer.getName());
+				if(dreamWorld != null) {
+					final Player player = event.getPlayer();
+					player.sendMessage("<" + dreamer.getName() + "> " + ChatColor.GRAY + "Take a look and you'll see...");
+					server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						public void run() {
+							player.teleport(dreamWorld.getSpawnLocation());
+							server.dispatchCommand(server.getConsoleSender(), "title " + player.getName() + " subtitle {text:\"In a world of pure imagination\"}");
+							server.dispatchCommand(server.getConsoleSender(), "title " + player.getName() + " title {text:\"" + dreamer.getName() + "'s Dream\"}");
+						}
+					}, 20);
+				}
+			}
 		}
 	}
 }
