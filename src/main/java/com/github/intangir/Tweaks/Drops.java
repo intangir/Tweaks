@@ -12,6 +12,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -155,6 +157,10 @@ public class Drops extends Tweak
 	    if(pigmenNetherwartDropChance > 0 && e.getEntity().getType() == EntityType.PIG_ZOMBIE)
 	        if(rand.nextInt(100) < pigmenNetherwartDropChance)
 	            e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), new ItemStack(Material.NETHER_STALK, 1));
+
+	    if(e.getEntity().getType() == EntityType.SKELETON && ((Skeleton)e.getEntity()).getSkeletonType() == SkeletonType.WITHER && rand.nextInt(100) < 30) {
+    		e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), new ItemStack(Material.STONE_SWORD));
+	    }
 	    
 	    if(villagerDomesticDropChance > 0 &&
 	    	((e.getEntity().getType() == EntityType.ZOMBIE && ((Zombie)e.getEntity()).isVillager()) ||
