@@ -216,11 +216,17 @@ public class Portals extends Tweak
 						// random
 						l = Respawn.chooseSpawn_s(p.getValue().getTo());
 					}
-					e.setTo(l.add(0.5, 0.5, 0.5));
+					if(e.getFrom().getWorld().equals(l.getWorld())) {
+						e.getPlayer().teleport(l.add(0.5, 0.5, 0.5));
+						e.setCancelled(true);
+					} else {
+						e.setTo(l.add(0.5, 0.5, 0.5));
+					}
 					l.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
 					return;
 				}
 				// translate to the new location
+				
 				l = l.subtract(p.getValue().getFrom());
 				l.setWorld(p.getValue().getDest().getWorld());
 				l = l.add(p.getValue().getDest());
