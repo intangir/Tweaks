@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -47,6 +49,9 @@ public class Respawn extends Tweak
 		spawnEffects.put("CONFUSION", 6);
 		spawnEffects.put("BLINDNESS", 3);
 		
+		spawnItems = new ArrayList<String>();
+		spawnKit = new ArrayList<ItemStack>();
+		
 		noSpawnIds = new HashSet<Integer>(Arrays.asList(
 			Material.WATER.getId(),
 			Material.STATIONARY_WATER.getId(),
@@ -71,21 +76,35 @@ public class Respawn extends Tweak
 	{
 		super.enable();
 
-		for(String effect : spawnEffects.keySet())
+		for(String effect : spawnEffects.keySet()) {
 			effects.add(new PotionEffect(PotionEffectType.getByName(effect), spawnEffects.get(effect) * 20, 5));
+		}
+		
+		for(String item : spawnItems) {
+			spawnKit.add(parseItemStack(item));
+		}
 	}
-	
 
 	private String defaultWorld;
 	private Map<String, String> worldRespawns;
 	private Map<String, String> overrides;
 	private Map<String, Integer> spawnEffects;
+	private List<String> spawnItems;
 	private Set<Integer> noSpawnIds;
 	private transient Collection<PotionEffect> effects;
+	private transient List<ItemStack> spawnKit;
 	private static Respawn instance = null; 
 	private Double respawnHealth;
 	private Integer respawnFood;
-	
+
+	public ItemStack parseItemStack(String item) {
+		String[] parts = item.split(",");
+		return new ItemStack(
+			Material.getMaterial(parts[0]),
+			parts.length >= 2 ? Integer.parseInt(parts[1]) : 1,
+			parts.length >= 3 ? Short.parseShort(parts[2]) : 0
+		);
+	}
 	
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
@@ -100,6 +119,9 @@ public class Respawn extends Tweak
 				p.addPotionEffects(effects);
 				p.setHealth(respawnHealth);
 				p.setFoodLevel(respawnFood);
+				for(ItemStack item : spawnKit) {
+					p.getInventory().addItem(item);
+				}
 			}
 		}, 2);
 
