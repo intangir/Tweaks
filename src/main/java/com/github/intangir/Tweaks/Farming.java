@@ -123,7 +123,7 @@ public class Farming extends Tweak
             int lossChance = weakCropChance;
 
             // not enough light
-            if(block.getLightFromSky() < lightRequired) {
+            if(block.getLightLevel() < lightRequired) {
             	lossChance += lowLightPenalty;
             }
 
