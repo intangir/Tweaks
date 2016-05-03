@@ -57,6 +57,7 @@ public class Chat extends Tweak
 		showQuits = true;
 		showKicks = true;
 		showDeaths = true;
+		showDeathCoords = true;
 		
 		censoring = true;
 		
@@ -106,6 +107,7 @@ public class Chat extends Tweak
 	private boolean showQuits;
 	private boolean showKicks;
 	private boolean showDeaths;
+	private boolean showDeathCoords;
 	private transient Map<CommandSender, Long> spamTime;
 	private transient Map<CommandSender, String> spamRepeated;
 	
@@ -196,10 +198,12 @@ public class Chat extends Tweak
 			e.setDeathMessage(null);
 		
 		// append location info for logging and private message
-		Location loc = e.getEntity().getLocation();
-		msg = msg + "([" + loc.getWorld().getName() + "] " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + ")";
-		log.info(msg);
-		e.getEntity().sendMessage(ChatColor.YELLOW + msg);
+		if(showDeathCoords) {
+			Location loc = e.getEntity().getLocation();
+			msg = msg + "([" + loc.getWorld().getName() + "] " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ() + ")";
+			log.info(msg);
+			e.getEntity().sendMessage(ChatColor.YELLOW + msg);
+		}
 	}
 	
 	void MessagePlayer(CommandSender sender, CommandSender receiver, String message) {
