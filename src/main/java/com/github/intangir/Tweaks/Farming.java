@@ -38,15 +38,14 @@ public class Farming extends Tweak
 		weakCrops.add("CROPS");
 		weakCrops.add("CARROT");
 		weakCrops.add("POTATO");
+		weakCrops.add("BEETROOT");
 		
 		aridBiomes = new HashSet<String>();
 		aridBiomes.add("DESERT");
 		aridBiomes.add("DESERT_HILLS");
-		aridBiomes.add("DESERT_MOUNTAINS");
 		aridBiomes.add("MESA");
-		aridBiomes.add("MESA_BRYCE");
-		aridBiomes.add("MESA_PLATEAU");
-		aridBiomes.add("MESA_PLATEAU_MOUNTAINS");
+		aridBiomes.add("MESA_CLEAR_ROCK");
+		aridBiomes.add("MESA_ROCK");
 		aridBiomes.add("HELL");
 	}
 	

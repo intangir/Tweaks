@@ -83,8 +83,8 @@ public class Disasters extends Tweak
 								LargeFireball fireball = (LargeFireball) world.spawnEntity(meteorLoc, EntityType.FIREBALL);
 								fireball.setIsIncendiary(true);
 								fireball.setYield(meteorYield);
-								world.playSound(meteorLoc, Sound.AMBIENCE_THUNDER, (float)100, (float)0.5);
-								world.playSound(meteorLoc, Sound.FIREWORK_LAUNCH, (float)100, (float)0.5);
+								world.playSound(meteorLoc, Sound.ENTITY_LIGHTNING_THUNDER, (float)100, (float)0.5);
+								world.playSound(meteorLoc, Sound.ENTITY_FIREWORK_LAUNCH, (float)100, (float)0.5);
 								//debug("spawned fireball " + fireball.getLocation());
 							}
 						}, rand.nextInt(meteorTicks));
