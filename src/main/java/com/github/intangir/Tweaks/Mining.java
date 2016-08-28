@@ -38,7 +38,7 @@ public class Mining extends Tweak
 		fatigueWorlds.put("world_nether", netherWorld);
 		
 		slowEffects = new ArrayList<PotionEffect>();
-		weakEffects = new ArrayList<PotionEffect>();
+		//weakEffects = new ArrayList<PotionEffect>();
 		miningEffects = new ArrayList<PotionEffect>();
 		currentLevels = new HashMap<Player, Integer>();
 		currentTimers = new HashMap<Player, Long>();
@@ -50,7 +50,7 @@ public class Mining extends Tweak
 	private Map<String, List<Integer>> fatigueWorlds;
 	private transient List<PotionEffect> slowEffects;
 	private transient List<PotionEffect> miningEffects;
-	private transient List<PotionEffect> weakEffects;
+	//private transient List<PotionEffect> weakEffects;
 	private transient Map<Player, Integer> currentLevels;
 	private transient Map<Player, Long> currentTimers;
 	private transient List<Integer> emptyLevels;
@@ -65,7 +65,7 @@ public class Mining extends Tweak
 		for(int level = 0; level < 3; level++) {
 			miningEffects.add(new PotionEffect(PotionEffectType.SLOW_DIGGING, durationseconds * 20, level, true, false));
 			slowEffects.add(new PotionEffect(PotionEffectType.SLOW, durationseconds * 20, level, true, false));
-			weakEffects.add(new PotionEffect(PotionEffectType.WEAKNESS, durationseconds * 20, level, true, false));
+			//weakEffects.add(new PotionEffect(PotionEffectType.WEAKNESS, durationseconds * 20, level, true, false));
 		}
 
 		server.getScheduler().scheduleSyncRepeatingTask(plugin, new ApplyEffects(), 0, checkseconds * 20);
@@ -121,11 +121,11 @@ public class Mining extends Tweak
 			if(applyLevel >= 0) {
 				p.addPotionEffect(miningEffects.get(applyLevel), true);
 				p.addPotionEffect(slowEffects.get(applyLevel), true);
-				p.addPotionEffect(weakEffects.get(applyLevel), true);
+				//p.addPotionEffect(weakEffects.get(applyLevel), true);
 			} else {
 				p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
 				p.removePotionEffect(PotionEffectType.SLOW);
-				p.removePotionEffect(PotionEffectType.WEAKNESS);
+				//p.removePotionEffect(PotionEffectType.WEAKNESS);
 			}
 		}
 	}
