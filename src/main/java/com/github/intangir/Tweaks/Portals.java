@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.Vector;
 
 public class Portals extends Tweak
 {
@@ -36,6 +37,9 @@ public class Portals extends Tweak
 		specialPortals = new HashMap<String, SpecialPortal>();
 		SpecialPortal example = new SpecialPortal("world 0 70 0", "world_example 10 100 10");
 		specialPortals.put("example", example);
+		
+		adjustPortal = "0.0 2.0 0.0";
+		adjustTeleport = "0.5 0.5 0.5";
 		
 		warpedDimensions = new HashMap<String, WarpedDimension>();
 		WarpedDimension example2 = new WarpedDimension("second_world", "second_nether", 10);
@@ -64,6 +68,8 @@ public class Portals extends Tweak
 	private String portalPermission;
 	private String operator;
 	private int seaLevel;
+	private String adjustPortal;
+	private String adjustTeleport;
 
 	// this one is called after all of the worlds are loaded
 	public void delayedEnable()
@@ -92,7 +98,17 @@ public class Portals extends Tweak
 		}
 		return null;
 	}
-	
+
+	public Vector parseVector(String vec) {
+		if(vec != null) {
+			String[] parts = vec.split(" ");
+			if(parts.length == 3) {
+				return new Vector(Float.parseFloat(parts[0]), Float.parseFloat(parts[1]), Float.parseFloat(parts[2]));
+			}
+		}
+		return null;
+	}
+
 	@Getter
 	public class SpecialPortal extends Config {
 		public SpecialPortal() {}
@@ -186,55 +202,63 @@ public class Portals extends Tweak
 
 	public void onWarpPortal(GeneralPortalEvent e) {
 
-		// special portals
-		for(Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
-			Location l = e.getFrom();
-			if(l.getWorld().equals(p.getValue().getFrom().getWorld()) && l.distance(p.getValue().getFrom()) < fudgeRadius) {
+		// special portals for players only
+		if(e.getPlayer() != null) {
+			// special portals
+			for(Entry<String, SpecialPortal> p : specialPortals.entrySet()) {
+				Location l = e.getFrom();
+				if(l.getWorld().equals(p.getValue().getFrom().getWorld()) && l.distance(p.getValue().getFrom()) < fudgeRadius) {
 
-				// disable special portals for non-players
-				if(e.getPlayer() == null) {
-					e.setCancelled(true);
-					return;
-				}
-				
-				log.info(e.getPlayer().getName() + " using gate " + p.getKey());
+					log.info(e.getPlayer().getName() + " using gate " + p.getKey());
 
-				if(server.getWorld(p.getValue().getTo()) != null) {
+					// test for beam down (destination world only)
+					if(server.getWorld(p.getValue().getTo()) != null) {
 
-					// test for beam down
-					BlockVector beamDown = null;
-					if(beamDowns.contains(e.getPlayer().getName())) {
-						beamDown = parseLocation(beamDowns.get(e.getPlayer().getName())).toVector().toBlockVector();
-					}
-					if(beamDown != null) {
-						l = Respawn.getValidY_s(server.getWorld(p.getValue().getTo()), beamDown.getBlockX(), beamDown.getBlockZ());
-						if(l == null) {
-							e.getPlayer().sendMessage(ChatColor.GREEN + "<from " + operator + "> Your previous location was longer reachable, you have been beamed down randomly!");
+						// beam down to previous beamup location
+						BlockVector beamDown = null;
+						if(beamDowns.contains(e.getPlayer().getName())) {
+							beamDown = parseLocation(beamDowns.get(e.getPlayer().getName())).toVector().toBlockVector();
 						}
-					} 
-					if(beamDown == null || l == null) {
-						// random
-						l = Respawn.chooseSpawn_s(p.getValue().getTo());
+						// check if beamdown location is still valid
+						if(beamDown != null) {
+							l = Respawn.getValidY_s(server.getWorld(p.getValue().getTo()), beamDown.getBlockX(), beamDown.getBlockZ());
+							if(l == null) {
+								e.getPlayer().sendMessage(ChatColor.GREEN + "<from " + operator + "> Your previous location was longer reachable, you have been beamed down randomly!");
+							}
+						} 
+						// beamdown to a new random location
+						if(beamDown == null || l == null) {
+							// random
+							l = Respawn.chooseSpawn_s(p.getValue().getTo());
+						}
+						// teleport instead of portal if its in the same world
+						if(e.getFrom().getWorld().equals(l.getWorld())) {
+							e.getPlayer().teleport(l.add(parseVector(adjustTeleport)));
+							debug("beamdown teleporting " + e.getPlayer().getName() + " to " + l.toString());
+							e.setCancelled(true);
+						// set the portal exit point for beamdown portal
+						} else {
+							e.setTo(l.add(parseVector(adjustPortal)));
+							e.setTravelAgent(false);
+							debug("beamdown portalling " + e.getPlayer().getName() + " to " + l.toString());
+						}
+						l.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
+						return;
 					}
-					if(e.getFrom().getWorld().equals(l.getWorld())) {
-						e.getPlayer().teleport(l.add(0.5, 0.5, 0.5));
-						e.setCancelled(true);
-					} else {
-						e.setTo(l.add(0.5, 0.5, 0.5));
-					}
-					l.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
+
+					// portal is a special portal - translate to the new world/location
+					l = l.subtract(p.getValue().getFrom());
+					l.setWorld(p.getValue().getDest().getWorld());
+					l = l.add(p.getValue().getDest());
+					l = l.add(parseVector(adjustPortal));
+					e.setTo(l);
+					e.setTravelAgent(false);
+					debug("special portalling " + e.getPlayer().getName() + " to " + l.toString());
 					return;
 				}
-				// translate to the new location
-				
-				l = l.subtract(p.getValue().getFrom());
-				l.setWorld(p.getValue().getDest().getWorld());
-				l = l.add(p.getValue().getDest());
-				e.setTo(l);
-				return;
 			}
 		}
-		
+
 		// custom portal dimensions (link to and from a world besides world_nether)
 		Location l = customPortalDestination(e.getFrom());
 		if(l != null) {
