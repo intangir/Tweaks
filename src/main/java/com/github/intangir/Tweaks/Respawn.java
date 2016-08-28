@@ -114,16 +114,7 @@ public class Respawn extends Tweak
 		log.info("player respawn from " + wname);
 
 		// apply spawn buffs (delayed) and adjust health
-		server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			public void run() {
-				p.addPotionEffects(effects);
-				p.setHealth(respawnHealth);
-				p.setFoodLevel(respawnFood);
-				for(ItemStack item : spawnKit) {
-					p.getInventory().addItem(item);
-				}
-			}
-		}, 2);
+		applySpawnStatus(p);
 
 		// override respawn world for some
 		boolean overridden = false;
@@ -150,6 +141,24 @@ public class Respawn extends Tweak
 		log.info("chose spawn location for " + p.getName() + " at " + l);
 		p.sendBlockChange(l, Material.BEACON, (byte) 0); // helps make it so they don't just instantly fall into the ground
 		e.setRespawnLocation(l.add(0.5, 0.5, 0.5));
+	}
+	
+	public static void applySpawnStatus_s(final Player p) {
+		instance.applySpawnStatus(p);
+	}
+
+	public void applySpawnStatus(final Player p) {
+		// apply spawn buffs (delayed) and adjust health
+		server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			public void run() {
+				p.addPotionEffects(effects);
+				p.setHealth(respawnHealth);
+				p.setFoodLevel(respawnFood);
+				for(ItemStack item : spawnKit) {
+					p.getInventory().addItem(item);
+				}
+			}
+		}, 2);
 	}
 	
 	public static Location chooseSpawn_s(String world) {

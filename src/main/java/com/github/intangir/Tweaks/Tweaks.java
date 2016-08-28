@@ -59,6 +59,8 @@ public class Tweaks extends JavaPlugin implements Listener
         	tweaks.add(new Effects(this));
         if(mainConfig.isFarming())
         	tweaks.add(new Farming(this));
+        if(mainConfig.isFirstjoin())
+        	tweaks.add(new Firstjoin(this));
         if(mainConfig.isMining())
         	tweaks.add(new Mining(this));
         if(mainConfig.isMobs())
