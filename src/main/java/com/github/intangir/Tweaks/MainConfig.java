@@ -25,6 +25,7 @@ public class MainConfig extends Config
 	private boolean drops;
 	private boolean effects;
 	private boolean farming;
+	private boolean firstjoin;
 	private boolean mining;
 	private boolean mobs;
 	private boolean pets;
@@ -63,6 +64,7 @@ public class MainConfig extends Config
 		drops = false;
 		effects = false;
 		farming = false;
+		firstjoin = false;
 		mining = false;
 		mobs = false;
 		pets = false;
