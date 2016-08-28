@@ -40,13 +40,15 @@ public class Titles extends Tweak
 		setTitle(e.getPlayer(), titles.get(e.getPlayer().getWorld().getName()));
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setTitle(Player player, String title) {
 		if(title != null) {
 			String[] parts = title.split(",",2);
 			if(parts.length > 1) {
-				server.dispatchCommand(server.getConsoleSender(), "title " + player.getName() + " subtitle {text:\"" + parts[1] + "\"}");
+				player.sendTitle(parts[0], parts[1]);
+			} else {
+				player.sendTitle(parts[0], "");
 			}
-			server.dispatchCommand(server.getConsoleSender(), "title " + player.getName() + " title {text:\"" + parts[0] + "\"}");
 		}
 		
 	}
