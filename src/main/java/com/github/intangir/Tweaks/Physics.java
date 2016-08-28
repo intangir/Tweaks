@@ -144,7 +144,7 @@ public class Physics extends Tweak
 					if(e.getToBlock().getRelative(f).getType() == Material.WATER || e.getToBlock().getRelative(f).getType() == Material.STATIONARY_WATER) {
 						e.setCancelled(true);
 						e.getToBlock().setType(Material.OBSIDIAN);
-						e.getBlock().getWorld().playSound(e.getBlock().getLocation(), Sound.FIZZ, 1, 1);
+						e.getBlock().getWorld().playSound(e.getBlock().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
 					}
 				}
 			}
@@ -215,7 +215,7 @@ public class Physics extends Tweak
 		if(deepTorchCancel > e.getBlock().getY() && e.getBlock().getWorld().getEnvironment() == World.Environment.NORMAL) {
 			if(blockType == Material.TORCH || blockType == Material.JACK_O_LANTERN || blockType == Material.FIRE) {
 				e.getPlayer().sendMessage(ChatColor.RED + "Not enough oxygen for flames down here");
-				block.getWorld().playSound(block.getLocation(), Sound.FIZZ, 1, 1);
+				block.getWorld().playSound(block.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
 				block.breakNaturally();
 			}
 		}
@@ -283,7 +283,7 @@ public class Physics extends Tweak
         		
         		if(near.getType() == Material.STONE && near.getData() == 0) {
         			e.setCancelled(true);
-        			near.getWorld().playSound(near.getLocation(), Sound.SILVERFISH_WALK, (float)1, (float)0.5);
+        			near.getWorld().playSound(near.getLocation(), Sound.ENTITY_SILVERFISH_STEP, (float)1, (float)0.5);
         			near.setType(Material.COBBLESTONE);
         			return;
         		}
@@ -316,7 +316,7 @@ public class Physics extends Tweak
 	public void dropBlock(Block block)
     {
     	if(block.getType() != Material.AIR) {
-			block.getLocation().getWorld().spawnFallingBlock(block.getLocation(), block.getType(), block.getData());
+			block.getLocation().getWorld().spawnFallingBlock(block.getLocation().add(0.5, 0, 0.5), block.getType(), block.getData());
 			block.setType(Material.AIR);
 		}
     }
